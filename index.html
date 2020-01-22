@@ -1,0 +1,276 @@
+<html>
+<head>
+    <title>Infinite Recursive Shape - Answer</title>
+    <style>
+/*!
+*Styles that controls the page
+*@uhtor: Chukwuemeka Ekeh
+*@since: 21 January, 2020
+*/
+   
+ /**
+ *Reset page body
+ */  
+body{
+    margin: 0;
+    padding: 0;
+}
+
+/**
+ *Page heder
+ */
+.header{
+    background: black;
+    padding: 5px 20px;
+    color: #fff;
+}
+
+ /**
+ *Container wrapping the content of the page
+ */  
+.container {
+    max-width: 1000px;
+    padding: 20px;
+    margin: 0 auto;
+}
+
+/**
+ *Horizontal and vertical lines
+ */
+.shape-item {
+    display: inline-block;
+    width: 5px;
+    height: 10px;
+}
+
+.text-center{
+    text-align: center;
+}
+
+/**
+ *Wrapper for the inputs of width, height and padding.
+ */
+.input-container{
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/**
+ *Container wrapper for the actual shape
+ */
+#shape{
+    text-align: center;
+}
+
+/**
+ *Error messaging container
+ */
+#msg-box{
+    color: red; margin-top: 10px;
+}
+
+.red{
+    color: #f00;
+}
+
+.green{
+    color: green;
+}
+
+/**
+*Breathe animation for the vertical and horizontal lines
+*/
+.anim {
+  -webkit-animation: keyAnim 3.4s linear infinite;
+          animation: keyAnim 3.4s linear infinite;
+  -webkit-transform-origin: 50%;
+          transform-origin: 50%;
+}
+
+/**
+*Webkt browser animation support
+*/
+@-webkit-keyframes keyAnim {
+  0%, 100% {
+    -webkit-transform: scale(1);
+            transform: s cale(1);
+  }
+  35%, 65% {
+    -webkit-transform: scale(1.2);
+            transform: scale(1.2);
+  }
+  50% {
+    -webkit-transform: scale(1.5);
+            transform: scale(1.5);
+  }
+}
+
+/**
+*Standard keyframes
+*/
+@keyframes keyAnim {
+  0%, 100% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+  }
+  35%, 65% {
+    -webkit-transform: scale(1.2);
+            transform: scale(1.2);
+  }
+  50% {
+    -webkit-transform: scale(1.5);
+            transform: scale(1.5);
+  }
+}
+
+    </style>
+</head>
+
+<body>
+        <header class="header">
+            <h1 class="text-center">Infinite Recursive Shape</h1>
+        </header>
+        <section class="container">
+        <div class="input-container">
+            <div>
+                <label for="width">Width:</label> <input id="width" value="100" placeholder="Width here..." />
+                <label for="height">Height:</label> <input id="height" value="30" placeholder="Height here..." />
+                <label for="padding">Padding:</label> <input id="padding" value="4" placeholder="Padding here..." />
+                <div id="msg-box"></div>
+            </div>
+            
+        </div>
+        <div id="shape"></div>
+    </section>
+
+    <script>
+/*!
+*Javascript codes to draw infinite recursive shape
+*/
+
+/**
+*A function that draws the shapes
+*@param width The width of the shape to draw
+*@param height The height of the shape to draw
+*@param padding The padding between the shapes
+*@return array Two dimensional array with the generated values
+*/
+        function draw(width, height, padding) {
+            if (width <= padding + 2 || height <= padding + 2) { // Base case: innermost rectangle
+                if (width <= 0 || height <= 0) return [];
+                if (height < 2) return [Array(width).fill(1)];
+                return [
+                    [2, ...Array(width - 2).fill(1), 2],
+                    ...Array.from({
+                        length: height - 2
+                    }, () => width < 2 ? [2] : [2, ...Array(width - 2).fill(0), 2]), [2, ...Array(width - 2).fill(1), 2],
+                ];
+            }
+            return [
+                [2, ...Array(width - 2).fill(1), 2],
+                ...Array.from({
+                    length: padding / 2
+                }, () => [2, ...Array(width - 2).fill(0), 2]),
+                ...draw(width - padding - 2, height - padding - 2, padding).map((row, i) => [2, ...Array(padding / 2).fill(0), ...row, ...Array(padding / 2).fill(0), 2]),
+                ...Array.from({
+                    length: padding / 2
+                }, () => [2, ...Array(width - 2).fill(0), 2]), [2, ...Array(width - 2).fill(1), 2],
+            ];
+        }
+
+        // function readTextFile(file, callback) {
+        //     var rawFile = new XMLHttpRequest();
+        //     rawFile.overrideMimeType("application/json");
+        //     rawFile.open("GET", file, true);
+        //     rawFile.onreadystatechange = function() {
+        //         if (rawFile.readyState === 4 && rawFile.status == "200") {
+        //             callback(rawFile.responseText);
+        //         }
+        //     }
+        //     rawFile.send(null);
+        // }
+
+        // readTextFile("test_data.json", function(text) {
+        //     var data = JSON.parse(text);
+        //     console.log(data)
+        //     data.forEach((element, i) => {
+        //         let input = element.input.split(',')
+        //         let matrix = draw(parseInt(input[0]), parseInt(input[1]), parseInt(input[2]))
+        //         console.log(JSON.stringify(matrix) == element.pixelArrayJson)
+        //     });
+        // });
+
+/**
+*A function that draws the shape at page load or when the values of the text fields changes.
+*@return void Does not return a value
+*/
+        function refresh() {
+            let width = parseInt(document.getElementById('width').value)
+            let height = parseInt(document.getElementById('height').value)
+            let padding = parseInt(document.getElementById('padding').value)
+            let msgBox = document.getElementById('msg-box')
+            let message = ''
+            if (width === NaN) {
+                message = ''
+                msgBox.innerHTML = ''
+                return;
+            }
+            if (height === NaN) {
+                message = ''
+                msgBox.innerHTML = ''
+                return;
+            }
+            if (padding === NaN) {
+                message = ''
+                msgBox.innerHTML = ''
+                return;
+            }
+
+            if (width % 2 !== 0 || width < 20) {
+                message = 'Width must be an even number and greater or equal to 20';
+            } else if (height % 2 !== 0 || height < 20) {
+                message = 'Height must be an even number and greater or equal to 20';
+            } else if (padding % 2 !== 0 || padding < 4) {
+                message = 'Padding must be an even number and greater or equal to 4';
+            }
+            if (message !== '') {
+                msgBox.innerHTML = message;
+                return;
+            } else {
+                message = '';
+                msgBox.innerHTML = '';
+            }
+            let shapeBox = document.getElementById('shape')
+            let output = ''
+            let matrix = draw(width, height, padding)
+            matrix.forEach(row => {
+                row.forEach(cell => {
+                    let text = ''
+                    switch (cell) {
+                        case 0:
+                            text = `<span class="shape-item">&nbsp;</span>`
+                            break
+                        case 1:
+                            text = `<span class="shape-item green anim">-</span>`
+                            break
+                        case 2:
+                            text = `<span class="shape-item red anim">|</span>`
+                    }
+                    output += text
+                })
+                output += '<br/>'
+            })
+            shapeBox.innerHTML = output
+        }
+        window.onload = function() {
+            refresh();
+            document.getElementById('width').addEventListener('keyup', refresh);
+            document.getElementById('height').addEventListener('keyup', refresh);
+            document.getElementById('padding').addEventListener('keyup', refresh);
+        }
+    </script>
+</body>
+
+</html>
